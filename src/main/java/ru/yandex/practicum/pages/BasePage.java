@@ -1,5 +1,6 @@
 package ru.yandex.practicum.pages;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -12,29 +13,34 @@ import java.time.Duration;
 public class BasePage {
     protected WebDriver driver;
     protected WebDriverWait wait;
+    private final By MODAL_OVERLAY = By.xpath("//div[contains(@class, 'Modal_modal_overlay__')]");
+    private final By MODAL_CLOSE_BUTTON = By.xpath("//button[@aria-label='Закрыть' or contains(@class, 'Modal_modal__close')]");
 
     public BasePage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 
+    @Step("Поиск элемента")
     protected WebElement findElement(By locator) {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
+    @Step("Клик по элементу")
     protected void clickElement(By locator) {
         closeModalIfPresent();
         WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
         System.out.println("Element " + locator + " is displayed: " + element.isDisplayed());
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
         try {
-            Thread.sleep(500); // Задержка для анимаций
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         element.click();
     }
 
+    @Step("Ввод текста в элемент")
     protected void sendKeysToElement(By locator, String text) {
         closeModalIfPresent();
         WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
@@ -44,10 +50,12 @@ public class BasePage {
         element.sendKeys(text);
     }
 
+    @Step("Получение текста элемента")
     protected String getTextFromElement(By locator) {
         return findElement(locator).getText();
     }
 
+    @Step("Проверка отображения элемента")
     protected boolean isElementDisplayed(By locator) {
         try {
             return driver.findElement(locator).isDisplayed();
@@ -56,23 +64,23 @@ public class BasePage {
         }
     }
 
+    @Step("Ожидание исчезновения модального окна")
     protected void waitForModalToDisappear() {
-        By modalOverlay = By.xpath("//div[contains(@class, 'Modal_modal_overlay__')]");
         try {
-            wait.until(ExpectedConditions.invisibilityOfElementLocated(modalOverlay));
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(MODAL_OVERLAY));
             System.out.println("Modal overlay disappeared");
         } catch (Exception e) {
             System.out.println("No modal overlay found or timeout");
         }
     }
 
+    @Step("Закрытие модального окна, если оно присутствует")
     protected void closeModalIfPresent() {
-        By modalCloseButton = By.xpath("//button[@aria-label='Закрыть' or contains(@class, 'Modal_modal__close')]");
-        for (int i = 0; i < 3; i++) { // Повторные попытки закрытия
-            if (isElementDisplayed(modalCloseButton)) {
+        for (int i = 0; i < 3; i++) {
+            if (isElementDisplayed(MODAL_CLOSE_BUTTON)) {
                 System.out.println("Closing modal window");
                 try {
-                    clickElement(modalCloseButton);
+                    clickElement(MODAL_CLOSE_BUTTON);
                     waitForModalToDisappear();
                     break;
                 } catch (Exception e) {

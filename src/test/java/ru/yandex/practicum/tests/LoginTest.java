@@ -7,17 +7,12 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.WebDriver;
 import ru.yandex.practicum.api.ApiClient;
-import ru.yandex.practicum.helpers.DriverHelper;
 import ru.yandex.practicum.pages.*;
-
-import java.io.IOException;
 
 import static org.junit.Assert.assertTrue;
 
-public class LoginTest {
-    private WebDriver driver;
+public class LoginTest extends BaseTest {
     private MainPage mainPage;
     private LoginPage loginPage;
     private RegisterPage registerPage;
@@ -28,12 +23,9 @@ public class LoginTest {
     private String password;
     private String name;
     private String accessToken;
-    private String refreshToken;
 
     @Before
-    public void setUp() throws IOException {
-        DriverHelper driverHelper = new DriverHelper();
-        driver = driverHelper.initDriver();
+    public void setUp() {
         mainPage = new MainPage(driver);
         loginPage = new LoginPage(driver);
         registerPage = new RegisterPage(driver);
@@ -46,7 +38,6 @@ public class LoginTest {
         password = RandomStringUtils.randomAlphanumeric(8);
         Response createResponse = apiClient.createUser(email, password, name);
         accessToken = createResponse.path("accessToken");
-        refreshToken = createResponse.path("refreshToken");
 
         mainPage.open();
     }
@@ -66,7 +57,7 @@ public class LoginTest {
         mainPage.clickLoginButton();
         loginPage.login(email, password);
         mainPage.clickPersonalCabinetButton();
-        assertTrue("Не отображается кнопка выхода после входа", profilePage.isLogoutButtonDisplayed());
+        assertTrue("Кнопка выхода не отображается после входа", profilePage.isLogoutButtonDisplayed());
     }
 
     @Test
@@ -76,7 +67,7 @@ public class LoginTest {
         mainPage.clickPersonalCabinetButton();
         loginPage.login(email, password);
         mainPage.clickPersonalCabinetButton();
-        assertTrue("Не отображается кнопка выхода после входа", profilePage.isLogoutButtonDisplayed());
+        assertTrue("Кнопка выхода не отображается после входа", profilePage.isLogoutButtonDisplayed());
     }
 
     @Test
@@ -89,7 +80,7 @@ public class LoginTest {
         registerPage.clickLoginLink();
         loginPage.login(email, password);
         mainPage.clickPersonalCabinetButton();
-        assertTrue("Не отображается кнопка выхода после входа", profilePage.isLogoutButtonDisplayed());
+        assertTrue("Кнопка выхода не отображается после входа", profilePage.isLogoutButtonDisplayed());
     }
 
     @Test
@@ -101,6 +92,6 @@ public class LoginTest {
         forgotPasswordPage.clickLoginLink();
         loginPage.login(email, password);
         mainPage.clickPersonalCabinetButton();
-        assertTrue("Не отображается кнопка выхода после входа", profilePage.isLogoutButtonDisplayed());
+        assertTrue("Кнопка выхода не отображается после входа", profilePage.isLogoutButtonDisplayed());
     }
 }

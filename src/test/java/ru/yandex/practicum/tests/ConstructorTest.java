@@ -5,22 +5,15 @@ import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.WebDriver;
-import ru.yandex.practicum.helpers.DriverHelper;
 import ru.yandex.practicum.pages.MainPage;
-
-import java.io.IOException;
 
 import static org.junit.Assert.assertTrue;
 
-public class ConstructorTest {
-    private WebDriver driver;
+public class ConstructorTest extends BaseTest {
     private MainPage mainPage;
 
     @Before
-    public void setUp() throws IOException {
-        DriverHelper driverHelper = new DriverHelper();
-        driver = driverHelper.initDriver();
+    public void setUp() {
         mainPage = new MainPage(driver);
         mainPage.open();
     }

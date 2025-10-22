@@ -7,22 +7,17 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.WebDriver;
 import ru.yandex.practicum.api.ApiClient;
-import ru.yandex.practicum.helpers.DriverHelper;
 import ru.yandex.practicum.pages.LoginPage;
 import ru.yandex.practicum.pages.MainPage;
 import ru.yandex.practicum.pages.ProfilePage;
 import ru.yandex.practicum.pages.RegisterPage;
 
-import java.io.IOException;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertTrue;
 
-public class RegistrationTest {
-    private WebDriver driver;
+public class RegistrationTest extends BaseTest {
     private MainPage mainPage;
     private LoginPage loginPage;
     private RegisterPage registerPage;
@@ -34,9 +29,7 @@ public class RegistrationTest {
     private String name;
 
     @Before
-    public void setUp() throws IOException {
-        DriverHelper driverHelper = new DriverHelper();
-        driver = driverHelper.initDriver();
+    public void setUp() {
         mainPage = new MainPage(driver);
         loginPage = new LoginPage(driver);
         registerPage = new RegisterPage(driver);
@@ -66,15 +59,16 @@ public class RegistrationTest {
     public void successfulRegistration() {
         System.out.println("Starting registration with: " + name + ", " + email + ", " + password);
         registerPage.register(name, email, password);
-        // Проверяем, осталась ли страница регистрации, и кликаем "Войти", если нужно
+
         if (driver.getCurrentUrl().contains("/register")) {
             System.out.println("Still on register page, clicking login button");
-            registerPage.clickLoginButton(); // Изменено на clickLoginButton
+            registerPage.clickLoginLink();
         }
+
         loginPage.waitForLoginPage();
         loginPage.login(email, password);
         mainPage.clickPersonalCabinetButton();
-        assertTrue("Не отображается кнопка выхода после регистрации и входа", profilePage.isLogoutButtonDisplayed());
+        assertTrue("Кнопка выхода не отображается после регистрации и входа", profilePage.isLogoutButtonDisplayed());
 
         Response loginResponse = apiClient.loginUser(email, password);
         accessToken = loginResponse.path("accessToken");

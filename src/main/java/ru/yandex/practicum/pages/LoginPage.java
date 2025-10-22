@@ -1,5 +1,6 @@
 package ru.yandex.practicum.pages;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -18,42 +19,49 @@ public class LoginPage extends BasePage {
         super(driver);
     }
 
+    @Step("Ввод email: {email}")
     public void enterEmail(String email) {
         System.out.println("Entering email: " + email);
         closeModalIfPresent();
         sendKeysToElement(emailInput, email);
     }
 
+    @Step("Ввод пароля: {password}")
     public void enterPassword(String password) {
         System.out.println("Entering password: " + password);
         closeModalIfPresent();
         sendKeysToElement(passwordInput, password);
     }
 
+    @Step("Клик по кнопке входа")
     public void clickLoginButton() {
         System.out.println("Clicking login button");
         closeModalIfPresent();
         clickElement(loginButton);
     }
 
+    @Step("Клик по ссылке регистрации")
     public void clickRegisterLink() {
         System.out.println("Clicking register link");
         closeModalIfPresent();
         clickElement(registerLink);
     }
 
+    @Step("Клик по ссылке восстановления пароля")
     public void clickForgotPasswordLink() {
         System.out.println("Clicking forgot password link");
         closeModalIfPresent();
         clickElement(forgotPasswordLink);
     }
 
+    @Step("Вход в систему с email {email}")
     public void login(String email, String password) {
         enterEmail(email);
         enterPassword(password);
         clickLoginButton();
     }
 
+    @Step("Ожидание загрузки страницы входа")
     public void waitForLoginPage() {
         System.out.println("Waiting for login page to load");
         wait.until(ExpectedConditions.urlContains("/login"));

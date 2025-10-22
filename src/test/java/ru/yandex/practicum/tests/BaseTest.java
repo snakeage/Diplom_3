@@ -1,6 +1,6 @@
 package ru.yandex.practicum.tests;
 
-import org. junit.Before;
+import org.junit.Before;
 import org.openqa.selenium.WebDriver;
 import ru.yandex.practicum.helpers.DriverHelper;
 
