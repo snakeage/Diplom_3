@@ -36,14 +36,28 @@ public class LoginTest extends BaseTest {
         name = RandomStringUtils.randomAlphabetic(10);
         email = RandomStringUtils.randomAlphabetic(10) + "@yandex.ru";
         password = RandomStringUtils.randomAlphanumeric(8);
-        Response createResponse = apiClient.createUser(email, password, name);
-        accessToken = createResponse.path("accessToken");
+
+        // Создаём пользователя через API — токен получаем в tearDown
+        apiClient.createUser(email, password, name);
 
         mainPage.open();
     }
 
     @After
     public void tearDown() {
+        // Попытка получить токен, если его нет (тест мог упасть до входа)
+        if (email != null && password != null && accessToken == null) {
+            try {
+                Response loginResponse = apiClient.loginUser(email, password);
+                if (loginResponse.getStatusCode() == 200) {
+                    accessToken = loginResponse.path("accessToken");
+                }
+            } catch (Exception e) {
+                System.out.println("Не удалось получить токен: " + e.getMessage());
+            }
+        }
+
+        // Удаление пользователя
         if (accessToken != null) {
             apiClient.deleteUser(accessToken);
         }

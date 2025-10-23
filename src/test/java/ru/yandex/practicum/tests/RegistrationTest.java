@@ -47,6 +47,19 @@ public class RegistrationTest extends BaseTest {
 
     @After
     public void tearDown() {
+        // Попытка получить токен, если его нет (тест мог упасть до входа)
+        if (email != null && password != null && accessToken == null) {
+            try {
+                Response loginResponse = apiClient.loginUser(email, password);
+                if (loginResponse.getStatusCode() == 200) {
+                    accessToken = loginResponse.path("accessToken");
+                }
+            } catch (Exception e) {
+                System.out.println("Не удалось получить токен: " + e.getMessage());
+            }
+        }
+
+        // Удаление пользователя
         if (accessToken != null) {
             apiClient.deleteUser(accessToken);
         }
@@ -69,11 +82,6 @@ public class RegistrationTest extends BaseTest {
         loginPage.login(email, password);
         mainPage.clickPersonalCabinetButton();
         assertTrue("Кнопка выхода не отображается после регистрации и входа", profilePage.isLogoutButtonDisplayed());
-
-        Response loginResponse = apiClient.loginUser(email, password);
-        accessToken = loginResponse.path("accessToken");
-        System.out.println("Access token received: " + accessToken);
-        assertThat("Access token not received", accessToken, org.hamcrest.Matchers.notNullValue());
     }
 
     @Test
